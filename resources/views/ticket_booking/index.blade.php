@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.backend')
 
 @section('content')
 <div class="container mt-4">
@@ -25,25 +25,25 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($bookings as $booking)
+            @forelse($data as $d)
             <tr>
-                <td>{{ $booking->id }}</td>
-                <td>{{ $booking->user_id }}</td>
-                <td>{{ $booking->event_id }}</td>
-                <td>{{ $booking->quantity }}</td>
-                <td>${{ number_format($booking->total_amount, 2) }}</td>
+                <td>{{ $d->id }}</td>
+                <td>{{ $d->user_id }}</td>
+                <td>{{ $d->event_id }}</td>
+                <td>{{ $d->quantity }}</td>
+                <td>${{ number_format($d->total_amount, 2) }}</td>
                 <td>
                     <span class="badge 
                         @if($booking->status == 'paid') bg-success 
                         @elseif($booking->status == 'cancelled') bg-danger 
                         @else bg-warning text-dark @endif">
-                        {{ ucfirst($booking->status) }}
+                        {{ ucfirst($d->status) }}
                     </span>
                 </td>
-                <td>{{ $booking->booking_date }}</td>
+                <td>{{ $d->booking_date }}</td>
                 <td>
-                    <a href="{{ route('ticket_booking.edit', $booking->id) }}" class="btn btn-sm btn-info">Edit</a>
-                    <form action="{{ route('ticket_booking.destroy', $booking->id) }}" method="POST" class="d-inline">
+                    <a href="{{ route('ticket_booking.edit', $d->id) }}" class="btn btn-sm btn-info">Edit</a>
+                    <form action="{{ route('ticket_booking.destroy', $d->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
                         <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>

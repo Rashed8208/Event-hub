@@ -1,6 +1,6 @@
-<!-- @extends('layouts.app')
+@extends('layouts.backend')
 
-@section('content') -->
+@section('content')
 <div class="container mt-4">
     <div class="d-flex justify-content-between mb-3">
         <h2>Wishlist</h2>
@@ -44,4 +44,4 @@
         </tbody>
     </table>
 </div>
-<!-- @endsection -->
+ @endsection 

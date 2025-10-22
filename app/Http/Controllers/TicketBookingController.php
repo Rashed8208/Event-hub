@@ -12,7 +12,8 @@ class TicketBookingController extends Controller
      */
     public function index()
     {
-        //
+         $data=ticket_booking::get();
+        return view('ticket_booking.index',compact('data'));
     }
 
     /**
@@ -20,7 +21,7 @@ class TicketBookingController extends Controller
      */
     public function create()
     {
-        //
+         return view('ticket_booking.create');
     }
 
     /**
@@ -28,7 +29,8 @@ class TicketBookingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Ticket_booking::create($request->all());
+      return redirect()->route('ticket_booking.index');
     }
 
     /**
@@ -44,7 +46,7 @@ class TicketBookingController extends Controller
      */
     public function edit(ticket_booking $ticket_booking)
     {
-        //
+        return view('ticket_booking.edit',compact('ticket_booking'));
     }
 
     /**
@@ -52,7 +54,8 @@ class TicketBookingController extends Controller
      */
     public function update(Request $request, ticket_booking $ticket_booking)
     {
-        //
+        $ticket_booking->update($request->all());
+      return redirect()->route('ticket_booking.index');
     }
 
     /**
@@ -60,6 +63,7 @@ class TicketBookingController extends Controller
      */
     public function destroy(ticket_booking $ticket_booking)
     {
-        //
+         $ticket_booking->delete();
+      return redirect()->route('ticket_booking.index');
     }
 }

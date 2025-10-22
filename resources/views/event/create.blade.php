@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.backend')
 
 @section('content')
 <div class="container">
     <h2>Add New Event</h2>
 
-    <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('event.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
@@ -49,7 +49,7 @@
         </div>
 
         <button type="submit" class="btn btn-success">Save Event</button>
-        <a href="{{ route('events.index') }}" class="btn btn-secondary">Cancel</a>
+        <a href="{{ route('event.index') }}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 @endsection

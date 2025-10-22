@@ -1,6 +1,6 @@
-<!-- @extends('layouts.app')
+@extends('layouts.backend')
 
-@section('content') -->
+@section('content')
 <div class="container mt-4">
     <h2>Add to Wishlist</h2>
 
@@ -31,4 +31,4 @@
         <a href="{{ route('wishlist.index') }}" class="btn btn-secondary">Back</a>
     </form>
 </div>
-<!-- @endsection -->
+@endsection 
