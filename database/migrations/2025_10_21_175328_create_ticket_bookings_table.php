@@ -17,8 +17,8 @@ return new class extends Migration
             $table->integer('event_id')->nullable();
             $table->integer('quantity')->nullable();
             $table->decimal('total_amount', 10, 2)->nullable();
-            $table->enum('status', ['pending', 'paid', 'cancelled'])->default('pending');
-            $table->timestamp('booking_date')->nullable();
+            $table->integer('status')->default(0)->comment('0: pending, 1: confirmed, 2: cancelled');
+            $table->date('booking_date')->nullable();
             $table->timestamps();
         });
     }
