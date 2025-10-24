@@ -55,10 +55,6 @@
                                         Types
                                     </span></a>
                                 <ul class="collapse">
-                                    <li><a href="{{route('event.index')}}">Event</a></li>
-                                    <li><a href="{{route('venue.index')}}">Venue</a></li>
-                                     <li><a href="{{route('wishlist.index')}}">Wishlist</a></li>
-                                    <li><a href="{{route('ticket_booking.index')}}">Ticket Booking</a></li>
                                     
                                 </ul>
                             </li>
