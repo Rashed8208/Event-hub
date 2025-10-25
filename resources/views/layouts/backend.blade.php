@@ -55,7 +55,7 @@
                                         Types
                                     </span></a>
                                 <ul class="collapse">
-                                    
+                                    <li><a href="{{route('ticket_booking.index')}}">Ticket_booking</a></li>
                                 </ul>
                             </li>
                             <!-- <li>
