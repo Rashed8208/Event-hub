@@ -1,26 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Event;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    
+
     public function index()
     {
         $data = Event::all();
-        return view('event.index', compact('data'));
+        return response()->json($data);
     }
 
-   
-    public function create()
-    {
-        return view('event.create');
-    }
-
-   
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -30,37 +25,29 @@ class EventController extends Controller
             'start_time' => 'nullable',
             'end_time' => 'nullable',
             'price' => 'nullable|numeric|min:0',
-            'available_tickets' => 'nullable|integer|min:0',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'available_tickets' => 'nullable|integer|min:0'
         ]);
 
         $requestData = $validatedData;
 
-        
+
         if ($request->hasFile('image')) {
             $fileName = time() . '_' . $request->image->getClientOriginalName();
             $request->image->move(public_path('uploads/events'), $fileName);
-            $requestData['image'] = $fileName;
+            $requestData['image'] = 'uploads/events/'.$fileName;
         }
 
-        Event::create($requestData);
-
-        return redirect()->route('event.index')->with('success', 'Event created successfully!');
+        $event=Event::create($requestData);
+        return response()->json(['message' => 'Event Created ', 'data' => $event], 200);
     }
 
-    
+
     public function show(Event $event)
     {
-        return view('event.show', compact('event'));
+        return response()->json($event);
     }
 
-   
-    public function edit(Event $event)
-    {
-        return view('event.edit', compact('event'));
-    }
 
-    
     public function update(Request $request, Event $event)
     {
         $validatedData = $request->validate([
@@ -70,28 +57,26 @@ class EventController extends Controller
             'start_time' => 'nullable',
             'end_time' => 'nullable',
             'price' => 'nullable|numeric|min:0',
-            'available_tickets' => 'nullable|integer|min:0',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'available_tickets' => 'nullable|integer|min:0'
         ]);
 
         $requestData = $validatedData;
 
-        
+
         if ($request->hasFile('image')) {
             $fileName = time() . '_' . $request->image->getClientOriginalName();
             $request->image->move(public_path('uploads/events'), $fileName);
-            $requestData['image'] = $fileName;
+            $requestData['image'] = 'uploads/events/'.$fileName;
         }
 
         $event->update($requestData);
-
-        return redirect()->route('event.index')->with('success', 'Event updated successfully!');
+        return response()->json(['message' => 'Event updated ', 'data' => $event], 200);
     }
 
-    
+
     public function destroy(Event $event)
     {
         $event->delete();
-        return redirect()->route('event.index')->with('success', 'Event deleted successfully!');
+        return response()->json(['message' => 'Event updated '], 200);
     }
 }

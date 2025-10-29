@@ -9,4 +9,9 @@ class event extends Model
 {
     use HasFactory;
     protected $fillable=['title','description','location','date','start_time','end_time','price','available_tickets','image'];
+
+    public function getImageAttribute($value)
+    {
+        return $value ? url('/' . $value) : null;
+    }
 }
