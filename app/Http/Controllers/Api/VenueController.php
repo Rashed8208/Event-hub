@@ -13,11 +13,11 @@ class VenueController extends Controller
      */
     public function index()
     {
-        $venues = Venue::all();
+        $data = Venue::all();
 
         return response()->json([
             'status' => true,
-            'data' => $venues
+            'data' => $data
         ], 200);
     }
 
@@ -26,25 +26,27 @@ class VenueController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        $validatedData = $request->validate([
+            'name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'address' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'capacity' => 'nullable|integer|min:0',
             'price_per_day' => 'nullable|numeric|min:0',
             'status' => 'nullable|string|max:50',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        $requestData = $validatedData;
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            $imageName = time() . '_' . $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/venues'), $imageName);
-            $validated['image'] = $imageName;
+            $fileName = time() . '_' . $request->image->getClientOriginalName();
+            $request->image->move(public_path('uploads/venues'), $fileName);
+            $requestData['image'] = 'uploads/venues/' . $fileName;
         }
 
-        $venue = Venue::create($validated);
+        $venue = Venue::create($requestData);
 
         return response()->json([
             'status' => true,
@@ -53,59 +55,39 @@ class VenueController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified venue.
-     */
-    public function show($id)
+   
+    public function show(Venue $venue)
     {
-        $venue = Venue::find($id);
-
-        if (!$venue) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Venue not found.'
-            ], 404);
-        }
-
         return response()->json([
             'status' => true,
             'data' => $venue
         ], 200);
     }
 
-    /**
-     * Update the specified venue.
-     */
-    public function update(Request $request, $id)
+   
+    public function update(Request $request, Venue $venue)
     {
-        $venue = Venue::find($id);
-
-        if (!$venue) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Venue not found.'
-            ], 404);
-        }
-
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
+        $validatedData = $request->validate([
+            'name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'address' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
             'capacity' => 'nullable|integer|min:0',
             'price_per_day' => 'nullable|numeric|min:0',
             'status' => 'nullable|string|max:50',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Handle image update
+        $requestData = $validatedData;
+
+        
         if ($request->hasFile('image')) {
-            $imageName = time() . '_' . $request->image->getClientOriginalName();
-            $request->image->move(public_path('uploads/venues'), $imageName);
-            $validated['image'] = $imageName;
+            $fileName = time() . '_' . $request->image->getClientOriginalName();
+            $request->image->move(public_path('uploads/venues'), $fileName);
+            $requestData['image'] = 'uploads/venues/' . $fileName;
         }
 
-        $venue->update($validated);
+        $venue->update($requestData);
 
         return response()->json([
             'status' => true,
@@ -114,20 +96,8 @@ class VenueController extends Controller
         ], 200);
     }
 
-    /**
-     * Remove the specified venue.
-     */
-    public function destroy($id)
+    public function destroy(Venue $venue)
     {
-        $venue = Venue::find($id);
-
-        if (!$venue) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Venue not found.'
-            ], 404);
-        }
-
         $venue->delete();
 
         return response()->json([

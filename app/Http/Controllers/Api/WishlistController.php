@@ -8,15 +8,13 @@ use Illuminate\Http\Request;
 
 class WishlistController extends Controller
 {
-    /**
-     * Display all wishlist items for all users (or can be filtered by user_id).
-     */
+   
     public function index(Request $request)
     {
         $userId = $request->query('user_id');
 
         if ($userId) {
-            $wishlists = Wishlist::where('user_id', $userId)->with('event')->get();
+            $wishlists = Wishlist::where('user_id', $userId)->with(['user', 'event'])->get();
         } else {
             $wishlists = Wishlist::with(['user', 'event'])->get();
         }
@@ -27,9 +25,7 @@ class WishlistController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a newly created wishlist item.
-     */
+   
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -45,7 +41,7 @@ class WishlistController extends Controller
         if ($exists) {
             return response()->json([
                 'status' => false,
-                'message' => 'This event is already in the wishlist.'
+                'message' => 'This event is already in your wishlist.'
             ], 400);
         }
 
@@ -53,14 +49,12 @@ class WishlistController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Event added to wishlist.',
+            'message' => 'Event added to wishlist successfully.',
             'data' => $wishlist
         ], 201);
     }
 
-    /**
-     * Show a specific wishlist item.
-     */
+   
     public function show($id)
     {
         $wishlist = Wishlist::with(['user', 'event'])->find($id);
@@ -78,9 +72,32 @@ class WishlistController extends Controller
         ], 200);
     }
 
-    /**
-     * Remove a wishlist item.
-     */
+    
+    public function update(Request $request, $id)
+    {
+        $wishlist = Wishlist::find($id);
+
+        if (!$wishlist) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Wishlist item not found.'
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'event_id' => 'sometimes|exists:events,id',
+        ]);
+
+        $wishlist->update($validated);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Wishlist item updated successfully.',
+            'data' => $wishlist
+        ], 200);
+    }
+
+   
     public function destroy($id)
     {
         $wishlist = Wishlist::find($id);
@@ -96,7 +113,7 @@ class WishlistController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Wishlist item removed.'
+            'message' => 'Wishlist item removed successfully.'
         ], 200);
     }
 }

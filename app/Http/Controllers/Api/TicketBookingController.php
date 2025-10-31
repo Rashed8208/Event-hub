@@ -3,129 +3,118 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\TicketBooking;
-use App\Models\Event;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 
-class TicketBookingController extends Controller
+class TicketController extends Controller
 {
     /**
-     * Display a listing of all bookings.
+     * Display a listing of all tickets.
      */
     public function index()
     {
-        $bookings = TicketBooking::with(['event', 'user'])->get();
+        $tickets = Ticket::all();
+
         return response()->json([
             'status' => true,
-            'data' => $bookings
+            'data' => $tickets
         ], 200);
     }
 
     /**
-     * Store a newly created booking.
+     * Store a newly created ticket.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'event_id' => 'required|exists:events,id',
+            'ticket_type' => 'required|string|max:100',
+            'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
-            'total_amount' => 'required|numeric|min:0',
+            'available_tickets' => 'nullable|integer|min:0',
             'status' => 'nullable|integer',
-            'booking_date' => 'nullable|date',
         ]);
 
-        // Check event ticket availability
-        $event = Event::findOrFail($request->event_id);
-        if ($event->available_tickets < $request->quantity) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Not enough tickets available.'
-            ], 400);
-        }
-
-        // Create booking
-        $booking = TicketBooking::create($validated);
-
-        // Update available tickets
-        $event->decrement('available_tickets', $request->quantity);
+        $ticket = Ticket::create($validated);
 
         return response()->json([
             'status' => true,
-            'message' => 'Booking created successfully.',
-            'data' => $booking
+            'message' => 'Ticket created successfully.',
+            'data' => $ticket
         ], 201);
     }
 
     /**
-     * Display a single booking.
+     * Display a single ticket.
      */
     public function show($id)
     {
-        $booking = TicketBooking::with(['event', 'user'])->find($id);
+        $ticket = Ticket::find($id);
 
-        if (!$booking) {
+        if (!$ticket) {
             return response()->json([
                 'status' => false,
-                'message' => 'Booking not found.'
+                'message' => 'Ticket not found.'
             ], 404);
         }
 
         return response()->json([
             'status' => true,
-            'data' => $booking
+            'data' => $ticket
         ], 200);
     }
 
     /**
-     * Update an existing booking.
+     * Update an existing ticket.
      */
     public function update(Request $request, $id)
     {
-        $booking = TicketBooking::find($id);
+        $ticket = Ticket::find($id);
 
-        if (!$booking) {
+        if (!$ticket) {
             return response()->json([
                 'status' => false,
-                'message' => 'Booking not found.'
+                'message' => 'Ticket not found.'
             ], 404);
         }
 
         $validated = $request->validate([
+            'event_id' => 'sometimes|exists:events,id',
+            'ticket_type' => 'sometimes|string|max:100',
+            'price' => 'sometimes|numeric|min:0',
             'quantity' => 'sometimes|integer|min:1',
-            'total_amount' => 'sometimes|numeric|min:0',
+            'available_tickets' => 'sometimes|integer|min:0',
             'status' => 'sometimes|integer',
-            'booking_date' => 'sometimes|date',
         ]);
 
-        $booking->update($validated);
+        $ticket->update($validated);
 
         return response()->json([
             'status' => true,
-            'message' => 'Booking updated successfully.',
-            'data' => $booking
+            'message' => 'Ticket updated successfully.',
+            'data' => $ticket
         ], 200);
     }
 
     /**
-     * Remove a booking.
+     * Remove a ticket.
      */
     public function destroy($id)
     {
-        $booking = TicketBooking::find($id);
+        $ticket = Ticket::find($id);
 
-        if (!$booking) {
+        if (!$ticket) {
             return response()->json([
                 'status' => false,
-                'message' => 'Booking not found.'
+                'message' => 'Ticket not found.'
             ], 404);
         }
 
-        $booking->delete();
+        $ticket->delete();
 
         return response()->json([
             'status' => true,
-            'message' => 'Booking deleted successfully.'
+            'message' => 'Ticket deleted successfully.'
         ], 200);
     }
 }
