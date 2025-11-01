@@ -15,15 +15,10 @@ class VenueController extends Controller
     {
         $data = Venue::all();
 
-        return response()->json([
-            'status' => true,
-            'data' => $data
-        ], 200);
+        return response()->json($data);
     }
 
-    /**
-     * Store a newly created venue in storage.
-     */
+    
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -39,7 +34,7 @@ class VenueController extends Controller
 
         $requestData = $validatedData;
 
-        // Handle image upload
+       
         if ($request->hasFile('image')) {
             $fileName = time() . '_' . $request->image->getClientOriginalName();
             $request->image->move(public_path('uploads/venues'), $fileName);
@@ -49,7 +44,6 @@ class VenueController extends Controller
         $venue = Venue::create($requestData);
 
         return response()->json([
-            'status' => true,
             'message' => 'Venue created successfully.',
             'data' => $venue
         ], 201);
@@ -58,10 +52,7 @@ class VenueController extends Controller
    
     public function show(Venue $venue)
     {
-        return response()->json([
-            'status' => true,
-            'data' => $venue
-        ], 200);
+        return response()->json($venue);
     }
 
    
@@ -90,7 +81,6 @@ class VenueController extends Controller
         $venue->update($requestData);
 
         return response()->json([
-            'status' => true,
             'message' => 'Venue updated successfully.',
             'data' => $venue
         ], 200);
@@ -101,7 +91,6 @@ class VenueController extends Controller
         $venue->delete();
 
         return response()->json([
-            'status' => true,
             'message' => 'Venue deleted successfully.'
         ], 200);
     }
