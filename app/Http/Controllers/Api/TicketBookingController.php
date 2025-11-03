@@ -40,10 +40,11 @@ class TicketBookingController extends Controller
     }
 
 
-    public function show(TicketBooking $ticketBooking)
-    {
-        return response()->json($ticketBooking->load(['event', 'user']));
-    }
+    public function show($id)
+{
+    $booking = TicketBooking::with(['event'])->findOrFail($id);
+    return response()->json($booking);
+}
 
     
     public function update(Request $request, TicketBooking $ticketBooking)
@@ -85,4 +86,5 @@ class TicketBookingController extends Controller
 
         return response()->json(['message' => 'Booking deleted successfully'], 200);
     }
+    
 }
