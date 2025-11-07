@@ -19,6 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('events', EventController::class);
 Route::apiResource('ticket-booking', TicketBookingController::class);
+Route::put('/ticket-booking/{id}', [TicketBookingController::class, 'update']);
+
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('venue', VenueController::class);
