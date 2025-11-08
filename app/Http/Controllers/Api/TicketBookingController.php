@@ -79,45 +79,11 @@ class TicketBookingController extends Controller
     $ticketBooking = TicketBooking::findOrFail($id);
     
     $validatedData = $request->validate([
-        'user_id' => 'nullable|exists:users,id',
-        'event_id' => 'nullable|exists:events,id',
-        'quantity' => 'nullable|integer|min:1',
-        'total_amount' => 'nullable|numeric|min:0',
         'status' => 'nullable|integer',
         'booking_date' => 'nullable|date',
     ]);
 
-    // Handle event_id change
-    if (isset($validatedData['event_id']) && $validatedData['event_id'] != $ticketBooking->event_id) {
-        // Restore tickets to old event
-        $oldEvent = $ticketBooking->event;
-        $oldEvent->increment('available_tickets', $ticketBooking->quantity);
-        
-        // Deduct from new event
-        $newEvent = Event::findOrFail($validatedData['event_id']);
-        if ($newEvent->available_tickets < $ticketBooking->quantity) {
-            return response()->json(['message' => 'Not enough tickets available in the new event.'], 400);
-        }
-        $newEvent->decrement('available_tickets', $ticketBooking->quantity);
-    }
-
-    // Handle quantity change (only if event_id stays the same)
-    if (isset($validatedData['quantity']) && 
-        (!isset($validatedData['event_id']) || $validatedData['event_id'] == $ticketBooking->event_id)) {
-        $event = $ticketBooking->event;
-        $difference = $validatedData['quantity'] - $ticketBooking->quantity;
-
-        if ($difference > 0 && $event->available_tickets < $difference) {
-            return response()->json(['message' => 'Not enough tickets available to increase quantity.'], 400);
-        }
-
-        if ($difference > 0) {
-            $event->decrement('available_tickets', $difference);
-        } else if ($difference < 0) {
-            $event->increment('available_tickets', abs($difference));
-        }
-    }
-
+   
     $ticketBooking->update($validatedData);
 
     return response()->json(['message' => 'Booking updated successfully', 'data' => $ticketBooking], 200);
